@@ -1,0 +1,36 @@
+const pinataSKD = require("@pinata/sdk")
+const path = require("path")
+const fs = require("fs")
+
+const pinataApiKey = process.env.PINATA_API_KEY || "4db197f682998c732b33"
+const pinataApiSecret =
+    process.env.PINATA_API_SECRET ||
+    "48ef552c94d1b21422227d8c1c1127f64c94b6bd83e5e03287c7d956e9ebb37f"
+const pinata = new pinataSKD(pinataApiKey, pinataApiSecret)
+
+async function storeImages(imagesFilePath) {
+    const fullImagesPath = path.resolve(imagesFilePath)
+    const files = fs.readdirSync(fullImagesPath).filter((file) => file.includes(".jpeg"))
+    let responses = []
+    console.log("uploading to IPFS")
+    for (const fileIndex in files) {
+        const readableStreamForFile = fs.createReadStream(`${fullImagesPath}/${files[fileIndex]}`)
+        try {
+            const response = await pinata.pinFileToIPFS(readableStreamForFile, options)
+            responses.push(response)
+        } catch (error) {
+            console.log(error)
+        }
+    }
+    return { responses, files }
+}
+async function storeTokenUriMetadata(metadata) {
+    try {
+        const response = await pinata.pinJSONtoIPFS(metadata)
+        return response
+    } catch (error) {
+        console.log(error)
+    }
+    return null
+}
+module.exports = { storeImages }
