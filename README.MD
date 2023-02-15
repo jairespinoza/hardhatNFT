@@ -3,3 +3,5 @@
 1. BASIC NFT ERC721 STANDARD
 2. RANDOM IPFS NFT
 3. Used pinata to pin my NFT's
+
+I utilized Chainlink's VRF coordinator for random winner selection
